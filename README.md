@@ -100,7 +100,7 @@ Prerequisites
 
 # 3. Building Tiglon
 
-      a) unpack the Tiglon-v.1.1.tar.gz and change to the Tiglon-v.1.1/src directory and make
+      a) Change to the Tiglon-v.1.1/src directory and make
 
         $ cd src
         $ make all BOOST_PATH=/your/boost/dir BAMTOOLS_PATH=/your/bamtools/dir
