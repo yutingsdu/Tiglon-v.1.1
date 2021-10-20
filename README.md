@@ -55,15 +55,15 @@ Prerequisites
         #
         #########################################################################
 
-       Note: The default Boost installation directory is /usr/local. Take note of the boost 
-       installation directory, because you need to tell the Tiglon installer where to find 
-        boost later on.
+    Note: The default Boost installation directory is /usr/local. Take note of the boost 
+    installation directory, because you need to tell the Tiglon installer where to find 
+    boost later on.
 
 # 2. Installing BamTools
 
     Download bamtools via: git clone https://github.com/pezmaster31/bamtools.git 
 
-    Build bamtools by following the step below.
+    Build bamtools by following the steps below.
 
     a) go to the bamtools directory and make a new directory named "build"
 
@@ -96,12 +96,13 @@ Prerequisites
         ##########################################################################
 
     As an altanitive, you can build bamtools based on the instruction at
-   
     https://github.com/pezmaster31/bamtools/wiki/Building-and-installing
+    
+    Note: you need to tell the Tiglon installer where to find bamtools later on.
 
 # 3. Building Tiglon
 
-      a) Change to the Tiglon-v.1.1/src directory and make
+    Change to the Tiglon-v.1.1/src directory and make
 
         $ cd src
         $ make all BOOST_PATH=/your/boost/dir BAMTOOLS_PATH=/your/bamtools/dir
@@ -120,12 +121,12 @@ Prerequisites
         #
         ##########################################################################
 
-        If the Tiglon is installed successfully, you would find 5 executable files 
-        tiglon_abundance, tiglon_cover, tiglon_graph, tiglon_merge, tiglon_path_search in directory Tiglon-v.1.1/src/bin/
+    If the Tiglon is installed successfully, you would find 5 executable files 
+    tiglon_abundance, tiglon_cover, tiglon_graph, tiglon_merge, tiglon_path_search in directory Tiglon-v.1.1/src/bin/
 
 # 4. Running Tiglon
 
-      a) Type the following command OR Set the LD_LIBRARY_PATH enviroment variable
+    a) Type the following command OR Set the LD_LIBRARY_PATH enviroment variable
 
         $ export LD_LIBRARY_PATH=/home/yuting/local/boost/lib:$LD_LIBRARY_PATH
 
@@ -141,28 +142,28 @@ Prerequisites
         #
         ##########################################################################
 
-      b) The executable Tiglon is in the Tiglon-v.1.1 directory
+    b) The executable Tiglon is in the Tiglon-v.1.1 directory
 
         $ Tiglon -B bamFile_list -s first -o Tiglon_outdir
 
-        where the bamFile_list is a file that lists the alignments BAM files (one per line)
+        where the bamFile_list is a file that lists the alignments BAM files (one per line).
 
 
-# 5. Testing Tiglon on a demo data:
+# 5. Testing Tiglon on a demo data set:
 
-      To test if you have succesfully installed Tiglon,Please download the demo data from 
+    To test if you have succesfully installed Tiglon, please download the demo data set from 
       
-      https://sourceforge.net/projects/tiglon/files/DemoData/ 
+    https://sourceforge.net/projects/tiglon/files/DemoData/. 
 
-      At this website you will see two alignments files produced by Hisat2 and Star (Hisat.bam and Star.bam)
+    At this website you will see two alignments files produced by Hisat2 and Star (Hisat.bam and Star.bam)
 
-      Put the Hisat.bam and Star.bam in the directory Tiglon-v.1.1/sample_test/ and change to Tiglon-v.1.1/sample_test/
+    Put the Hisat.bam and Star.bam in the directory Tiglon-v.1.1/sample_test/ and change to Tiglon-v.1.1/sample_test/
 
-      Type the following command:
+    Type the following command:
 
-      $ ./run_me.sh
+        $ ./run_me.sh
 
-      If you get the tiglon_outdir/Tiglon.gtf, congratulations, you have succesfully installed the Tiglon.
+    If you get the tiglon_outdir/Tiglon.gtf, congratulations, you have succesfully installed the Tiglon.
 
 
 
