@@ -1,4 +1,5 @@
- Description
+ 
+Description
 ================
 
 Tiglon is a genome-guided transcriptome assembler that is specifically designed to integrate alignments of different mapping tools(such as Hisat2 and Star) to build the labeled splice graph and to extract more reliable paired paths. Tiglon employs label-based dynamic programming to recover the transcripts by making strategic use of the label-information. The software has been developed to be user-friendly.
