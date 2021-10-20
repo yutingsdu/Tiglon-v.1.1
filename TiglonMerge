@@ -1,0 +1,199 @@
+#!/bin/bash
+shellpath=`dirname $0`
+output_dir=tiglon_outdir
+left=read_1.fastq
+right=read_2.fastq
+single=Mysingle.fastq
+BamFiles="No_input"
+genome=Genome
+reference=Ref
+output_dir=tiglon_outdir
+IndexDir="NO_index"
+strand=unstranded
+
+MinAverageCov=0.03 #--min-average-junc-ratio 
+MinUnbalanceCov=0.03 #--min-unbalance-ratio
+Filter=0 # 0.5
+Gap=200 #--min-gap-length
+TransLen=500
+thread=1
+# parse options:
+RET=`getopt -o hvB:o:g:l:r:R:s:i:U:d:D:L:e:c:p: \
+--long help,version,bam:,output_dir:,genome:,left_reads:,right_reads:,\
+ref_gtf:,strand:,index_dir:,\
+single_reads:,min_average_frac:,min_unbalance_frag:,min_trans_length:,\
+min_gap_length:,min_trans_cov:,\
+thread:\
+  -n ' * ERROR' -- "$@"`
+
+#MinAverageCov=0.03 #--min-average-junc-ratio 
+#MinUnbalanceCov=0.03 #--min-unbalance-ratio
+#Filter=0 # 0.5
+#Gap=200 #--min-gap-length
+#TransLen=500
+
+# Note the quotes around $RET: they are essential!
+eval set -- "$RET"
+# set option values
+while true; do
+    case "$1" in
+        -h | --help ) usage; exit 1;;
+        -v | --version ) echo "** The current version of Tiglon is v.1.1 **"; exit 1;;
+        -o | --output_dir) output_dir=$2     
+			shift 2 ;;
+        -B | --bam) 	   BamFiles=$2 
+			shift 2 ;;
+	-g | --genome) 	   genome=$2  
+			shift 2 ;;
+	-l | --left_reads) 	   left=$2  
+			shift 2 ;;
+	-r | --right_reads) 	   right=$2  
+			shift 2 ;;
+	-R | --ref_gtf) reference=$2  
+			shift 2 ;;
+	-s | --strand) 	   strand=$2  
+			shift 2 ;;
+	-i | --index_dir)  IndexDir=$2 
+			shift 2 ;;
+	-U | --single_reads)     single=$2  
+			shift 2 ;;
+	-d | --min_average_frac) MinAverageCov=$2 
+			shift 2 ;;
+	-D | --min_unbalance_frac) MinUnbalanceCov=$2
+			shift 2 ;;
+	-L | --min_trans_length) TransLen=$2 
+			shift 2 ;;
+	-e | --min_gap_length) Gap=$2 
+			shift 2 ;;
+	-c | --min_trans_cov) Filter=$2 
+			shift 2 ;;
+	-p | --thread) thread=$2 
+			shift 2 ;;
+        -- ) shift; break ;;
+        * ) echoerror "internal error!" ; exit 1 ;;
+     esac
+done
+
+Run(){
+    cat $1 >>$output_dir/log
+ tmpfile=$$.fifo
+ mkfifo $tmpfile
+ exec 4<>$tmpfile
+ rm $tmpfile
+ 
+ for ((i=1;i<=100;i++));do # thred
+         echo
+	 done >&4
+	 SAVEIFS=$IFS
+	 IFS=$'\n'
+	 for i in `cat $1`
+	 do
+	 read
+	   (eval ${i};echo >&4 ) &
+	   done <&4
+	   IFS=$SAVEIFS
+	   wait
+	   exec 4>&-
+
+}
+
+############################ get covered transcripts of each sample ############################
+i=0
+j=0
+while read bam
+do
+    let i=i+1
+    graph=$output_dir"/Graph.bam"$i
+    for file_a in $output_dir/*;
+    do
+           temp_file=`basename $file_a`
+	   Dir=$output_dir/$temp_file
+	   if [ -d $Dir ];then
+	     cat  $Dir"/MyGraph.simplified.bam"$i".graph" >>$graph
+	   fi
+   done
+   echo $shellpath/src/bin/tiglon_cover $graph $output_dir/tiglon-temp.gtf first ">"$output_dir"/bam"$i".temp.gtf" >>$output_dir/commandCover
+   let x=$i%$thread
+   if [ $x = 0 ]; then
+       let j=j+1
+       mv $output_dir/commandCover $output_dir/commandCover$j
+   fi
+done < $BamFiles
+let j=j+1
+mv $output_dir/commandCover $output_dir/commandCover$j 2>$output_dir/log
+for file_a in $output_dir/*;
+do
+  file=`basename $file_a`
+  P=${file:0:12}
+  if [ $P == "commandCover" ]; then
+      Run $output_dir/$file
+  fi
+done
+i=0
+while read bam
+do
+   let i=i+1
+   rm $output_dir"/Graph.bam"$i
+done < $BamFiles
+
+############################ get transcripts' abundance of each sample ############################
+i=0
+j=0
+while read bam
+do
+    let i=i+1
+    echo $shellpath/src/bin/tiglon_abundance $bam -e -G $output_dir"/bam"$i".temp.gtf" -o $output_dir"/tiglon_abundance.bam"$i -c 0 -f 0 >>$output_dir/commandAbund
+    let x=$i%$thread
+    if [ $x = 0 ]; then
+        let j=j+1
+	mv $output_dir/commandAbund $output_dir/commandAbund$j
+    fi
+done < $BamFiles
+let j=j+1
+mv $output_dir/commandAbund $output_dir/commandAbund$j 2>$output_dir/log
+for file_a in $output_dir/*;
+do
+    file=`basename $file_a`
+    P=${file:0:12}
+    if [ $P == "commandAbund" ]; then
+        Run $output_dir/$file
+    fi
+done
+i=0
+while read bam
+do
+   let i=i+1
+   rm $output_dir"/bam"$i".temp.gtf"
+done < $BamFiles
+
+############################ get assembly ############################
+SMG=$output_dir"/SimpleMerge.gtf"
+rm $SMG 2>$output_dir/log
+i=0
+j=0
+while read bam
+do
+    let i=i+1
+    cat $output_dir"/tiglon_abundance.bam"$i".gtf" >>$SMG
+done < $BamFiles
+
+SampleSize=$i
+
+#cp $output_dir"/tiglon-temp.gtf" $output_dir"/Tiglon-0.gtf"
+$shellpath/src/bin/tiglon_merge $SMG  $output_dir"/tiglon-temp.gtf" $output_dir"/Tiglon.gtf" $Filter $SampleSize
+
+i=0
+while read bam
+do
+   let i=i+1
+   rm $output_dir"/tiglon_abundance.bam"$i".gtf"
+done < $BamFiles
+for file_a in $output_dir/*;
+do
+    file=`basename $file_a`
+    P=${file:0:7}
+    if [ $P == "command" ]; then
+ 	rm $output_dir/$file
+    fi
+done
+rm $SMG $output_dir/log
