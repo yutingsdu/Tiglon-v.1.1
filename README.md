@@ -107,8 +107,8 @@ Prerequisites
         $ cd src
         $ make all BOOST_PATH=/your/boost/dir BAMTOOLS_PATH=/your/bamtools/dir
 
-        where BOOST_PATH is the aformentioned directory where you installing the boost 
-        and BAMTOOLS_PATH is the directory where you installing the bamtools.
+        where BOOST_PATH is the aformentioned directory where you installed the boost 
+        and BAMTOOLS_PATH is the directory where you installed the bamtools.
 
         #########################################################################
         #
@@ -121,8 +121,8 @@ Prerequisites
         #
         ##########################################################################
 
-    If the Tiglon is installed successfully, you would find 5 executable files 
-    tiglon_abundance, tiglon_cover, tiglon_graph, tiglon_merge, tiglon_path_search in directory Tiglon-v.1.1/src/bin/
+    If the Tiglon is installed successfully, you'll see the following 5 executable files in Tiglon-v.1.1/src/bin/
+    tiglon_abundance, tiglon_cover, tiglon_graph, tiglon_merge, tiglon_path_search.
 
 # 4. Running Tiglon
 
