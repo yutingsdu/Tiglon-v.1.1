@@ -176,15 +176,15 @@ Prerequisites
 
     --strand/-s <string>: Strand-specific RNA-Seq reads orientation.
 
-			 If reads are paired:
-				    1) Use <unstranded> to indicate RNA-seq reads are non-strand-specific.
-				    2) Use <first> to indicate fr-first-stranded RNA-seq reads.
-				    3) Use <second> to indicate fr-second-stranded RNA-seq reads.
+     If reads are paired:
+      1) Use <unstranded> to indicate RNA-seq reads are non-strand-specific.
+      2) Use <first> to indicate fr-first-stranded RNA-seq reads.
+      3) Use <second> to indicate fr-second-stranded RNA-seq reads.
 
-			 If reads are single:
-				    1) Use <single_unstranded> to indicate RNA-seq reads are non-strand-specific.
-				    2) Use <single_forward> to indicate RNA-seq reads are forward.
-				    3) Use <single_reverse> to indicate RNA-seq reads are reverse.
+     If reads are single:
+      1) Use <single_unstranded> to indicate RNA-seq reads are non-strand-specific.
+      2) Use <single_forward> to indicate RNA-seq reads are forward.
+      3) Use <single_reverse> to indicate RNA-seq reads are reverse.
 
 ---------------------------------------------------------------------------
 
