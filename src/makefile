@@ -1,6 +1,5 @@
-
 # LIBRARY SETTINGS - SET AS NECESSARY
-# 
+#
 # For recent versions of BamTools (>= 2.5):
 #
 BOOST_PATH ?= /your/boost/dir
@@ -8,13 +7,14 @@ BAMTOOLS_PATH ?= /your/bamtools/dir
 BOOST_INCLUDE = $(BOOST_PATH)/include
 BOOST_LIB = $(BOOST_PATH)/lib
 BAMTOOLS_INCLUDE = $(BAMTOOLS_PATH)/include/bamtools
-BAMTOOLS_LIB = $(BAMTOOLS_PATH)/lib64
+BAMTOOLS_LIB = $(BAMTOOLS_PATH)/lib
+BAMTOOLS_LIB2 = $(BAMTOOLS_PATH)/lib64
 
 INCS = -I$(BOOST_INCLUDE) -I$(BAMTOOLS_INCLUDE) -I.
-LIBS = -L$(BOOST_LIB) -L$(BAMTOOLS_LIB) -lboost_random -lboost_filesystem -lboost_system  -lbamtools -lz -lboost_serialization -lbam -pthread
+LIBST = -L$(BOOST_LIB) -L$(BAMTOOLS_LIB) -L$(BAMTOOLS_LIB2) -lboost_random -lboost_filesystem -lboost_system  -lbamtools -lz -lboost_serialization -lbam -pthread
 
 # use the following for older versions of BamTools (e.g. commit https://github.com/pezmaster31/bamtools/commit/2d7685d2aeedd11c46ad3bd67886d9ed65c30f3e)
-# 
+#
 # BOOST_PATH ?= /data/projects/phillippy/software/boost_1_60_0/
 # BAMTOOLS_PATH ?= /data/projects/phillippy/software/bamtools
 # BOOST_INCLUDE = $(BOOST_PATH)/include
@@ -29,20 +29,23 @@ LIBS = -L$(BOOST_LIB) -L$(BAMTOOLS_LIB) -lboost_random -lboost_filesystem -lboos
 MKDIR_P = mkdir -p
 
 .PHONY: directories
-	
+
 # END LIBRARY SETTINGS
 
 #
-# object and binary dirs  
+# object and binary dirs
 #
 
-DIR_OBJ = ./obj1
-DIR_OBJ2 = ./obj2
-DIR_OBJ3 = ./obj3
-DIR_OBJ4 = ./obj4
+DIR_OBJ = ./obj/obj1
+DIR_OBJ2 = ./obj/obj2
+DIR_OBJ3 = ./obj/obj3
+DIR_OBJ4 = ./obj/obj4
 DIR_BIN = ./bin
-OUT_DIR = ./bin ./obj1 ./obj2 ./obj3 ./obj4
+OUT_DIR = ./bin ./obj/obj1 ./obj/obj2 ./obj/obj3 ./obj/obj4
+
 directories: ${OUT_DIR}
+
+#-- for now these MUST point to the included "samtools-0.x.x" and "gclib" sub-directories
 
 #-- for now these MUST point to the included "samtools-0.x.x" and "gclib" sub-directories
 BAM  := ./samtools-0.1.18
@@ -72,7 +75,7 @@ LDFLAGS := $(if $(LDFLAGS),$(LDFLAGS),-g)
 
 LDFLAGS += -L${BAM}
 
-# LIBS    := -lbam -lz
+LIBS    := -lbam -lz
 
 ifneq (,$(findstring nothreads,$(MAKECMDGOALS)))
  NOTHREADS=1
@@ -98,12 +101,12 @@ else
 endif
 
 # Non-windows systems need pthread
-#ifndef WINDOWS
-# ifndef NOTHREADS
-#   LIBS := -pthread ${LIBS}
-#   BASEFLAGS += -pthread
-# endif
-#endif
+ifndef WINDOWS
+ ifndef NOTHREADS
+   LIBS := -pthread ${LIBS}
+   BASEFLAGS += -pthread
+ endif
+endif
 
 ifdef NOTHREADS
   BASEFLAGS += -DNOTHREADS
@@ -166,7 +169,7 @@ endif
 ifdef DEBUG_BUILD
   #$(warning Building DEBUG version of tiglon_abundance.. )
   DBG_WARN=@echo
-#  DBG_WARN+='WARNING: built DEBUG version [much slower], use "make clean release" for a faster, optimized version of the program.'
+  DBG_WARN+='WARNING: built DEBUG version [much slower], use "make clean release" for a faster, optimized version of the program.'
 endif
 
 OBJS := ${GDIR}/GBase.o ${GDIR}/GArgs.o ${GDIR}/GStr.o ${GDIR}/GBam.o \
@@ -180,12 +183,10 @@ endif
 ifndef NOTHREADS
  OBJS += ${GDIR}/GThreads.o 
 endif
-
 %.o : %.cpp
 	${CXX} ${CXXFLAGS} -c $< -o $@
 
 OBJS += rlink.o tablemaker.o tmerge.o
-
 all release static debug: $(DIR_BIN)/tiglon_abundance${EXE}
 memcheck memdebug tsan tcheck thrcheck: $(DIR_BIN)/tiglon_abundance${EXE}
 memuse memusage memtrace: $(DIR_BIN)/tiglon_abundance${EXE}
@@ -204,7 +205,18 @@ $(DIR_BIN)/tiglon_abundance: ${BAM}/libbam.a $(OBJS) tiglon_abundance.o
 	${DBG_WARN}
 test demo tests: tiglon_abundance${EXE}
 	@./run_tests.sh
+.PHONY : clean cleanall cleanAll allclean
 
+# target for removing all object files
+
+#	echo $(PATH)
+#clean:
+#	${RM} tiglon_abundance${EXE} tiglon_abundance.o*  $(OBJS)
+#	${RM} core.*
+#allclean cleanAll cleanall:
+#	cd ${BAM} && make clean
+#	${RM} tiglon_abundance${EXE} tiglon_abundance.o* $(OBJS)
+#	${RM} core.*
 
 
 COPTS  = -ggdb -O2 -fopenmp -std=gnu++0x -fstack-protector-all
@@ -245,7 +257,7 @@ all: directories $(EXECS1)
 
 $(EXECS1): $(OBJS1)
 	$(foreach EX, $(EXECS1), $(COMPILE) $(EX).cpp  -c -o $(DIR_OBJ)/$(EX).o;)
-	$(foreach EX, $(EXECS1), $(COMPILE) $(OBJS1) $(DIR_OBJ)/$(EX).o -o $(DIR_BIN)/$(EX) $(LIBS);)
+	$(foreach EX, $(EXECS1), $(COMPILE) $(OBJS1) $(DIR_OBJ)/$(EX).o -o $(DIR_BIN)/$(EX) $(LIBST);)
 
 
 $(DIR_OBJ)/%.o: %.cpp %.h
@@ -254,7 +266,7 @@ $(DIR_OBJ)/%.o: %.cpp %.h
 all: directories $(EXECS2)
 $(EXECS2): $(OBJS2)
 	$(foreach EX, $(EXECS2), $(COMPILE) $(EX).cpp  -c -o $(DIR_OBJ2)/$(EX).o;)
-	$(foreach EX, $(EXECS2), $(COMPILE) $(OBJS2) $(DIR_OBJ2)/$(EX).o -o $(DIR_BIN)/$(EX) $(LIBS);)
+	$(foreach EX, $(EXECS2), $(COMPILE) $(OBJS2) $(DIR_OBJ2)/$(EX).o -o $(DIR_BIN)/$(EX) $(LIBST);)
 
 $(DIR_OBJ2)/%.o: %.cpp %.h
 	$(COMPILE) $< -c -o $@
@@ -263,13 +275,13 @@ all: directories $(EXECS3)
 
 $(EXECS3):
 	$(COMPILE) $(EXECS3).cpp  -c -o $(DIR_OBJ3)/$(EXECS3).o
-	$(COMPILE) $(DIR_OBJ3)/$(EXECS3).o -o $(DIR_BIN)/$(EXECS3) $(LIBS);
+	$(COMPILE) $(DIR_OBJ3)/$(EXECS3).o -o $(DIR_BIN)/$(EXECS3) $(LIBST);
 
 all: directories $(EXECS4)
 
 $(EXECS4):
 	$(COMPILE) $(EXECS4).cpp  -c -o $(DIR_OBJ4)/$(EXECS4).o
-	$(COMPILE) $(DIR_OBJ4)/$(EXECS4).o -o $(DIR_BIN)/$(EXECS4) $(LIBS);
+	$(COMPILE) $(DIR_OBJ4)/$(EXECS4).o -o $(DIR_BIN)/$(EXECS4) $(LIBST);
 #
 # odds and ends
 #
