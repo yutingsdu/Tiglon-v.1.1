@@ -174,7 +174,7 @@ Tiglon v.1.1 usage:
 
     --bam/-B <string>		: path to the file listing the alignments BAM files (one per line)
 
-     --strand/-s <string> 		: Strand-specific RNA-Seq reads orientation.
+    --strand/-s <string> 		: Strand-specific RNA-Seq reads orientation.
 
 			   If reads are paired:
 				    1) Use <unstranded> to indicate RNA-seq reads are non-strand-specific.
