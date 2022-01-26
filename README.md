@@ -170,11 +170,11 @@ Prerequisites
 
 Tiglon v.1.1 usage:
 
-   ** Required **
+    ** Required **
 
-   --bam/-B <string>		: path to the file listing the alignments BAM files (one per line)
+    --bam/-B <string>		: path to the file listing the alignments BAM files (one per line)
 
-   --strand/-s <string> 		: Strand-specific RNA-Seq reads orientation.
+     --strand/-s <string> 		: Strand-specific RNA-Seq reads orientation.
 
 			   If reads are paired:
 				    1) Use <unstranded> to indicate RNA-seq reads are non-strand-specific.
@@ -188,37 +188,37 @@ Tiglon v.1.1 usage:
 
 ---------------------------------------------------------------------------
 
-   ** Options **
+    ** Options **
 
-   --help/-h			: Output Tiglon Help Information
+    --help/-h			: Output Tiglon Help Information
 
-   --version/-v			: Print current version of Tiglon
+    --version/-v			: Print current version of Tiglon
 
-   --output_dir/-o <string>	: Output path, default: tiglon_outdir
+    --output_dir/-o <string>	: Output path, default: tiglon_outdir
 
-   --min_trans_cov/-c <float> 	: Minimum expression level estimated by abundance analysis for output, default: >0.
+    --min_trans_cov/-c <float> 	: Minimum expression level estimated by abundance analysis for output, default: >0.
 
-   --min_trans_length/-L <int>   	: Minimum assembled transcript length, default: 500.
+    --min_trans_length/-L <int>   	: Minimum assembled transcript length, default: 500.
 
-   --min_average_frac/-d <float> 	: Minimum junction coverage fraction by average junction coverage, default: 0.03.
+    --min_average_frac/-d <float> 	: Minimum junction coverage fraction by average junction coverage, default: 0.03.
 
-   --min_unbalance_frac/-D <float> : Minimum fraction of unbalanced junction, default: 0.03.
+    --min_unbalance_frac/-D <float> : Minimum fraction of unbalanced junction, default: 0.03.
 
-   --min_gap_length/-e <int>   	: Minimum gap length between two exons, default: 200.
+    --min_gap_length/-e <int>   	: Minimum gap length between two exons, default: 200.
 
-   --thread/-p <int> 		: Number of threads to use (default: 2)
+    --thread/-p <int> 		: Number of threads to use (default: 2)
 
 ---------------------------------------------------------------------------
 
-   ** Typical commands **
+    ** Typical commands **
 
-   (i) A typical Tiglon command for paired-end data might be:
+    (i) A typical Tiglon command for paired-end data might be:
 
-    Tiglon -B bamFiles_list -s first -o Tiglon_outdir -p 2
+      Tiglon -B bamFiles_list -s first -o Tiglon_outdir -p 2
 
-   (ii) A typical Tiglon command for single-end data might be:
+    (ii) A typical Tiglon command for single-end data might be:
 
-    Tiglon -B bamFiles_list -s single_reverse -o Tiglon_outdir -p 2
+      Tiglon -B bamFiles_list -s single_reverse -o Tiglon_outdir -p 2
 
 ===========================================================================
 
